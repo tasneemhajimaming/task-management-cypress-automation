@@ -1,139 +1,124 @@
-# QA Technical Test - Automated Test Project
+# QA Technical Test - Cypress Automation
 
-## Project Overview
+## ภาพรวมโปรเจกต์
 
-โปรเจกต์นี้เป็นการสร้าง Automated Test สำหรับเว็บแอปพลิเคชัน Task Management ที่ทดสอบจากหน้าจอ Login ไปยัง Task flow หลัก โดยเน้นคุณภาพของโค้ดทดสอบ โครงสร้างโปรเจกต์ที่อ่านง่าย และการออกแบบ Test Case ที่ชัดเจน
+โปรเจกต์นี้เป็นการทำ Automated Test สำหรับระบบ Task Management โดยใช้ Cypress เพื่อทดสอบ flow หลักของระบบ ได้แก่ Login และ Task Management
 
-- เว็บไซต์ทดสอบ: `https://app-testing-sea-02.azurewebsites.net/login`
-- เป้าหมายหลัก: ทดสอบ flow `Login` และ `Task Management`
-- โฟกัส: ความอ่านง่ายของโค้ด, ความ maintainable, และแนวคิด QA แบบมืออาชีพ
+เป้าหมายหลักคือแสดงแนวคิดการออกแบบ Test, โครงสร้างโค้ดที่อ่านง่าย และการเขียน Automated Test ที่สามารถดูแลต่อได้
 
-## Tools & Tech Stack
+---
 
-- Framework: `Cypress`
-- Language: `JavaScript`
-- Dependencies:
-  - `cypress` v15.x
-- Configuration:
-  - `cypress.config.js` กำหนด `baseUrl` เป็น `https://app-testing-sea-02.azurewebsites.net`
+## เครื่องมือที่ใช้
 
-## Test Strategy / Approach
+- Cypress
+- JavaScript
 
-แนวทางการออกแบบการทดสอบประกอบด้วย:
+---
 
-- Positive testing: ตรวจสอบ flow หลัก เช่น Login สำเร็จ, Logout, Edit Task
-- Exploratory testing: สังเกต behavior ที่ไม่สอดคล้องระหว่าง UI กับ routing/network
-- Bug discovery mindset: ค้นหา inconsistency ที่เกิดจาก transition หรือ navigation
-- UI testing: ยืนยันว่าหน้าจอแสดงผลตาม expectation หลัง action แต่ละขั้น
+## แนวทางการทดสอบ (Test Approach)
 
-นอกจากนี้ยังออกแบบให้:
+- แบ่งการทดสอบตาม Feature (Login / Task)
+- ใช้ Custom Command (`cy.login()`) เพื่อลดการเขียนโค้ดซ้ำ
+- เน้นการทดสอบ Flow หลักของผู้ใช้งาน (End-to-End Flow)
+- ตรวจสอบผลลัพธ์จาก UI เป็นหลัก (Observable Behavior)
+- ใช้แนวคิด Positive Testing เป็นหลัก
 
-- แยก scenario ตาม feature เพื่อให้โค้ดง่ายต่อการขยาย
-- ใช้ custom command `cy.login()` เพื่อเพิ่ม reuse และลด duplication
-- ให้ความสำคัญกับ observable outcome เช่น `My Tasks` ต้องปรากฏหลัง login
+---
 
-## Test Case Design (Google Sheet)
+## Test Case
 
-Test case ถูกออกแบบและบันทึกใน Google Sheet เพื่อให้ทีมสามารถอ่านและตรวจสอบได้ง่าย
+Test Case ถูกจัดทำในไฟล์ Excel
 
-คอลัมน์หลักใน template:
+- ไฟล์: ``
 
-- `Test Case ID` - รหัสกรณีทดสอบที่ชัดเจน เช่น `AUTH-01`, `CRUD-02`, `FILT-01`
-- `Description` - อธิบายการทำงานหรือเป้าหมายของกรณีทดสอบ
-- `Steps` - รายละเอียดขั้นตอนการทดสอบแบบทีละขั้น
-- `Expected Result` - ผลลัพธ์ที่คาดหวังหลังทำตาม steps
+---
 
-สรุป test case หลัก:
+## โครงสร้างโปรเจกต์
 
-- Login สำเร็จด้วยข้อมูล admin
-- Login ไม่สำเร็จเมื่อ password ผิด
-- Logout สำเร็จและ redirect กลับหน้า login
-- แสดงรายการ Task ในหน้า My Tasks
-- แก้ไข Task แล้วกลับไปดูรายการได้
-- ฟิลเตอร์ Tasks ตามสถานะและ Priority
-- ตรวจสอบ behavior ของปุ่ม Create New Task
+```
+cypress/
+ ├── e2e/
+ │    ├── login.cy.js
+ │    └── task.cy.js
+ ├── support/
+ │    └── commands.js
+```
 
-## Observed Issue / Potential Bug
+---
 
-### Observed behavior
+## วิธีการรันโปรเจกต์
 
-พบพฤติกรรมที่น่าสนใจหลังจาก login สำเร็จ:
-
-- คลิกปุ่ม `Create New Task`
-- ระบบมี network request ไปยัง `/tasks/new`
-- UI ยังคงอยู่บนหน้าเดิม และไม่มี navigation ไปยัง `/tasks/new`
-- หากเข้า URL `/tasks/new` โดยตรง จะเข้าหน้าได้ปกติ
-
-### Expected behavior
-
-- เมื่อคลิกปุ่ม `Create New Task` หน้า UI ควรเรียก route `/tasks/new`
-- ควรเปลี่ยนหน้าให้ผู้ใช้เข้าสู่ฟอร์มสร้าง task ใหม่ทันที
-
-### Actual behavior
-
-- network request ถูกยิง แต่ UI ไม่ได้เปลี่ยนหน้า
-- routing behavior ไม่สอดคล้องกับ user interaction
-
-### QA mindset ที่สะท้อน
-
-- นี่เป็น `behavioral inconsistency` ระหว่าง UI, routing และ network
-- สามารถนำไปเป็น `exploratory test case` เพื่อยืนยันการทำงานของ navigation
-- แสดงแนวคิดว่าการทดสอบไม่ใช่แค่ดูข้อความหรือ element แต่ต้องสังเกต flow ทั้งระบบ
-
-## Project Structure
-
-โครงสร้างโปรเจกต์สะท้อนแนวทางแยกความรับผิดชอบอย่างชัดเจน:
-
-- `cypress/e2e/` - เก็บไฟล์ test case หลัก
-  - `login.cy.js`
-  - `logout.cy.js`
-  - `edit.cy.js`
-  - `filter.cy.js`
-- `cypress/fixtures/` - เก็บข้อมูล mock หรือ data ที่ใช้ในการทดสอบ
-- `cypress/support/` - เก็บ custom commands และการตั้งค่าที่ใช้ร่วมกัน
-  - `commands.js` มี `cy.login()` เพื่อ reuse flow login
-- `cypress.config.js` - กำหนดค่า baseUrl และ node event
-- `package.json` - กำหนด dependency และสคริปต์ของโปรเจกต์
-
-## How to Run Tests
-
-1. ติดตั้ง dependency:
+ติดตั้ง dependency
 
 ```bash
 npm install
 ```
 
-2. เปิด Cypress Test Runner:
+เปิด Cypress Test Runner
 
 ```bash
 npx cypress open
 ```
 
-3. หรือรันแบบ headless:
+หรือรันแบบ headless
 
 ```bash
 npx cypress run
 ```
 
-4. หากต้องการรันเฉพาะไฟล์:
+---
 
-```bash
-npx cypress run --spec "cypress/e2e/login.cy.js"
-```
+## Assumptions
 
-## Assumptions / Limitations
+- ใช้บัญชีทดสอบ:
+  - Email: admin@example.com
+  - Password: admin123
+- โฟกัสการทดสอบเฉพาะ Main Flow ของระบบ
+- ไม่ครอบคลุม edge case ทุกกรณี
 
-- ข้อมูล login ใช้บัญชี `admin@example.com` กับ `admin123`
-- การทดสอบปัจจุบันมุ่งเน้น flow หลัก ไม่ได้ครอบคลุมทุก edge case ของ Task CRUD
-- ยังไม่มีการจัดการ test data ที่ซับซ้อน เช่น mock API หรือ database isolation
-- ไม่มีการตรวจสอบ accessibility หรือ performance ในเวอร์ชันนี้
+---
 
-## Future Improvements
+## ปัญหาที่พบ (Observed Issue)
 
-แผนต่อไปเพื่อเพิ่มคุณภาพและความน่าเชื่อถือของโปรเจกต์:
+### ฟีเจอร์: Create New Task
 
-- Integrate กับ `CI/CD` เพื่อรัน tests อัตโนมัติเมื่อมี pull request
-- เพิ่ม reporting เช่น `HTML report` หรือ dashboard จาก Cypress
-- ขยาย coverage ให้รวม `Create Task`, `Delete Task`, `Sort` และ `กรณี negative` เพิ่มเติม
-- เพิ่ม layer ของ `page object` หรือ `component abstraction` เพื่อให้โค้ด maintainable มากขึ้น
-- เพิ่ม exploratory / regression test สำหรับ inconsistency ที่พบในหน้า `/tasks/new`
+**พฤติกรรมที่พบ:**
+
+- เมื่อกดปุ่ม "Create New Task"
+- ระบบมีการส่ง Network Request ไปยัง `/tasks/new`
+- แต่ UI ไม่เปลี่ยนหน้าไปยังฟอร์มสร้าง Task
+- อย่างไรก็ตาม หากเข้าผ่าน URL `/tasks/new` โดยตรง จะสามารถใช้งานหน้า Create Task ได้ตามปกติ
+
+---
+
+### ผลลัพธ์ที่คาดหวัง (Expected Behavior)
+
+- เมื่อกดปุ่ม "Create New Task"
+- ควรมีการเปลี่ยนหน้าไปยัง `/tasks/new`
+- ผู้ใช้งานควรเข้าสู่หน้าฟอร์มสร้าง Task ได้ทันที
+
+---
+
+### ผลลัพธ์ที่เกิดขึ้นจริง (Actual Behavior)
+
+- มี Network Request ไปยัง `/tasks/new`
+- UI ไม่เปลี่ยนหน้า (ไม่เกิด navigation)
+- พฤติกรรมไม่สอดคล้องกับการใช้งานของผู้ใช้
+
+---
+
+### การวิเคราะห์เบื้องต้น (QA Perspective)
+
+- เป็นลักษณะของ **UI Navigation Inconsistency**
+- อาจเกิดจาก routing ไม่ถูก trigger หลัง API call หรือ event handler ไม่ทำงานสมบูรณ์
+- สามารถใช้เป็น exploratory test case เพื่อยืนยันพฤติกรรมของระบบเพิ่มเติม
+
+---
+
+## สรุป
+
+โปรเจกต์นี้แสดงให้เห็น:
+- ความสามารถในการออกแบบ Test Case
+- การเขียน Cypress Automation Test
+- การจัดโครงสร้างโปรเจกต์ให้ maintainable
+- การสังเกตพฤติกรรมระบบที่ไม่สอดคล้อง (UI vs Network)

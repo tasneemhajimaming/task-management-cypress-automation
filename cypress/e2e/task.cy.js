@@ -72,6 +72,7 @@ describe("Task Management", () => {
       cy.url().should("include", "/tasks");
     });
   });
+  
   describe("Filter and Sort", () => {
     it("should clear selected filters", () => {
       cy.get("#status-filter").select("completed");
