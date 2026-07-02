@@ -16,12 +16,15 @@ describe("Task Management", () => {
       cy.contains("Create New Task").click();
 
       cy.url().should("include", "/tasks/new");
-      cy.contains("Fill in the details below to create a new task")
-        .should("be.visible");
+      cy.contains("Fill in the details below to create a new task").should(
+        "be.visible",
+      );
     });
 
     it("should create a new task successfully", () => {
-      const title = `Cypress Task ${new Date()}`;
+      const now = new Date();
+
+      const title = `Cypress Task ${now.toLocaleString("th-TH")}`;
 
       cy.contains("Create New Task").click();
 
@@ -39,7 +42,9 @@ describe("Task Management", () => {
 
   describe("Edit Task", () => {
     it("should update task successfully", () => {
-      const updatedTitle = `Updated Task ${new Date()}`;
+      const now = new Date();
+
+      const updatedTitle = `Updated Task ${now.toLocaleString("th-TH")}`;
 
       cy.get(".cursor-pointer").first().click();
 
@@ -67,12 +72,11 @@ describe("Task Management", () => {
         .first()
         .invoke("text")
         .then((taskTitle) => {
-
           cy.get(".cursor-pointer").first().click();
 
-          cy.contains("Delete Task").click();
-
           cy.on("window:confirm", () => true);
+
+          cy.contains("Delete Task").click();
 
           cy.url().should("include", "/tasks");
           cy.contains(taskTitle.trim()).should("not.exist");
@@ -84,7 +88,17 @@ describe("Task Management", () => {
     it("should filter tasks by completed status", () => {
       cy.get("#status-filter").select("completed");
 
-      cy.get("#status-filter").should("have.value", "completed");
+      cy.contains("Completed").should("exist");
+
+      cy.get('a[href^="/tasks/"]').should("not.contain", "Pending");
+    });
+  });
+
+  describe("Sort Tasks", () => {
+    it("should sort tasks by title", () => {
+      cy.get("#sort-by").select("title");
+
+      cy.get("#sort-by").should("have.value", "title");
     });
   });
 });
