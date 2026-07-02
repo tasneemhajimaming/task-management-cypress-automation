@@ -38,7 +38,7 @@ Test Case ถูกจัดทำในไฟล์ Excel
 ```
 cypress/
  ├── e2e/
- │    ├── login.cy.js
+ │    ├── auth.cy.js
  │    └── task.cy.js
  ├── support/
  │    └── commands.js
