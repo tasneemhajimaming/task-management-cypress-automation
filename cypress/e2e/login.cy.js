@@ -1,18 +1,17 @@
-describe('Login', () => {
+describe("Authentication", () => {
+  it("should login successfully", () => {
+    cy.login();
+    cy.url().should("include", "/tasks");
+    cy.contains("My Tasks").should("be.visible");
+  });
 
-  it('Login successfully', () => {
+  it("should logout successfully", () => {
+    cy.login();
 
-    cy.visit('/login')
+    cy.wait(1000);
 
-    cy.get('input[type="email"]').type('admin@example.com')
+    cy.contains("button", "Logout").click();
 
-    cy.get('input[type="password"]').type('admin123')
-
-    cy.get('button[type="submit"]').click();
-
-    // cy.url().should('include', '/tasks')
-    cy.contains('My Tasks').should('be.visible');
-
-  })
-
-})
+    cy.url().should("include", "/login");
+  });
+});
