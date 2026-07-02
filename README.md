@@ -78,42 +78,39 @@ npx cypress run
 
 ---
 
-## ปัญหาที่พบ (Observed Issue)
+## Observed Issue
 
-### ฟีเจอร์: Create New Task
+### Feature
 
-**พฤติกรรมที่พบ:**
+Create New Task
 
-- เมื่อกดปุ่ม "Create New Task"
-- ระบบมีการส่ง Network Request ไปยัง `/tasks/new`
-- แต่ UI ไม่เปลี่ยนหน้าไปยังฟอร์มสร้าง Task
-- อย่างไรก็ตาม หากเข้าผ่าน URL `/tasks/new` โดยตรง จะสามารถใช้งานหน้า Create Task ได้ตามปกติ
+### Expected Behavior
 
----
+เมื่อผู้ใช้คลิกปุ่ม **Create New Task**
+ระบบควรนำผู้ใช้ไปยังหน้า `/tasks/new`
+และแสดงฟอร์มสำหรับสร้าง Task ใหม่
 
-### ผลลัพธ์ที่คาดหวัง (Expected Behavior)
+### Actual Behavior (Manual Testing)
 
-- เมื่อกดปุ่ม "Create New Task"
-- ควรมีการเปลี่ยนหน้าไปยัง `/tasks/new`
-- ผู้ใช้งานควรเข้าสู่หน้าฟอร์มสร้าง Task ได้ทันที
+- ระบบส่ง Network Request ไปยัง `/tasks/new`
+- UI ไม่เปลี่ยนหน้า
+- ผู้ใช้ยังคงอยู่ที่หน้า Task List
 
----
+อย่างไรก็ตาม เมื่อเปิด `/tasks/new` โดยตรง
+สามารถเข้าหน้าสร้าง Task ได้ตามปกติ
 
-### ผลลัพธ์ที่เกิดขึ้นจริง (Actual Behavior)
+### Automated Testing Result
 
-- มี Network Request ไปยัง `/tasks/new`
-- UI ไม่เปลี่ยนหน้า (ไม่เกิด navigation)
-- พฤติกรรมไม่สอดคล้องกับการใช้งานของผู้ใช้
+เมื่อทดสอบด้วย Cypress
 
----
+- สามารถคลิกปุ่ม Create New Task ได้
+- ระบบนำทางไปยัง `/tasks/new`
+- หน้า Create Task แสดงผลตามที่คาดหวัง
 
-### การวิเคราะห์เบื้องต้น (QA Perspective)
+### QA Observation
 
-- เป็นลักษณะของ **UI Navigation Inconsistency**
-- อาจเกิดจาก routing ไม่ถูก trigger หลัง API call หรือ event handler ไม่ทำงานสมบูรณ์
-- สามารถใช้เป็น exploratory test case เพื่อยืนยันพฤติกรรมของระบบเพิ่มเติม
-
----
+พบความแตกต่างของพฤติกรรมระหว่าง Manual Testing และ Automated Testing
+จึงบันทึกไว้เป็นข้อสังเกตสำหรับการตรวจสอบเพิ่มเติมของ Demo Application
 
 ## สรุป
 

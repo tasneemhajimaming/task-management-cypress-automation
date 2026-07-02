@@ -1,4 +1,14 @@
 {
-    "email":"admin@example.com",
-    "password":"admin123"
+  "admin": {
+    "email": "admin@example.com",
+    "password": "admin123"
+  },
+  "invalidUser": {
+    "email": "admin@example.com",
+    "password": "wrongpassword"
+  },
+  "invalidEmail": {
+    "email": "invalid-email",
+    "password": "admin123"
+  }
 }

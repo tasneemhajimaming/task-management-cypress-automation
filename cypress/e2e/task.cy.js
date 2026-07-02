@@ -1,80 +1,87 @@
 describe("Task Management", () => {
+  let users;
+
+  before(() => {
+    cy.fixture("user").then((data) => {
+      users = data;
+    });
+  });
+
   beforeEach(() => {
-    cy.login();
+    cy.login(users.admin.email, users.admin.password);
   });
 
   describe("Create Task", () => {
-    it("should navigate to Create Task page when clicking Create New Task", () => {
-      cy.get('a[href="/tasks/new"]').click();
+    it("should navigate to create task page", () => {
+      cy.contains("Create New Task").click();
 
       cy.url().should("include", "/tasks/new");
-
-      cy.contains("Fill in the details below to create a new task").should(
-        "be.visible",
-      );
+      cy.contains("Fill in the details below to create a new task")
+        .should("be.visible");
     });
 
-    it("should create new task successfully", () => {
-      cy.visit("/tasks/new");
+    it("should create a new task successfully", () => {
+      const title = `Cypress Task ${new Date()}`;
 
-      const title = `Cypress Task ${Date.now()}`;
+      cy.contains("Create New Task").click();
 
       cy.get("#title").type(title);
-
       cy.get("#description").type("Created by Cypress");
-
       cy.get("#status").select("in_progress");
-
       cy.get("#priority").select("high");
 
       cy.contains("Create Task").click();
 
+      cy.url().should("include", "/tasks");
       cy.contains(title).should("be.visible");
     });
   });
 
   describe("Edit Task", () => {
-    it("Edit task successfully", () => {
+    it("should update task successfully", () => {
+      const updatedTitle = `Updated Task ${new Date()}`;
+
       cy.get(".cursor-pointer").first().click();
 
       cy.contains("Edit Task").click();
 
       cy.url().should("include", "/edit");
 
-      const updatedTitle = `Updated-${new Date()}`;
-
       cy.get("#title").clear().type(updatedTitle);
-
-      cy.get("#description").clear().type("Updated Description");
-
+      cy.get("#description").clear().type("Updated by Cypress");
       cy.get("#status").select("Completed");
-
       cy.get("#priority").select("Medium");
 
       cy.contains("Update Task").click();
 
       cy.contains("Back to Tasks").click();
 
-      // cy.contains('Updated by Cypress').should('be.visible');
+      cy.url().should("include", "/tasks");
+      cy.contains(updatedTitle).should("be.visible");
     });
   });
 
   describe("Delete Task", () => {
-    it("Delete task successfully", () => {
-      cy.get(".cursor-pointer").first().click();
+    it("should delete task successfully", () => {
+      cy.get(".cursor-pointer")
+        .first()
+        .invoke("text")
+        .then((taskTitle) => {
 
-      cy.contains("Delete Task").should("be.visible");
+          cy.get(".cursor-pointer").first().click();
 
-      cy.contains("Delete Task").click();
+          cy.contains("Delete Task").click();
 
-      cy.on("window:confirm", () => true);
+          cy.on("window:confirm", () => true);
 
-      cy.url().should("include", "/tasks");
+          cy.url().should("include", "/tasks");
+          cy.contains(taskTitle.trim()).should("not.exist");
+        });
     });
   });
-  
-  describe("Filter and Sort", () => {
-    it("should clear selected filters", () => {
+
+  describe("Filter Tasks", () => {
+    it("should filter tasks by completed status", () => {
       cy.get("#status-filter").select("completed");
 
       cy.get("#status-filter").should("have.value", "completed");
