@@ -77,6 +77,20 @@ npx cypress run
 - ไม่ครอบคลุม edge case ทุกกรณี
 
 ---
+## Automated Test Coverage
+
+Authentication
+- Successful Login
+- Invalid Password
+- Invalid Email Format
+- Logout
+
+Task Management
+- Create Task
+- Edit Task
+- Delete Task
+- Filter by Status
+- Sort by Title
 
 ## Observed Issue
 
